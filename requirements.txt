@@ -1,0 +1,5 @@
+Faker==4.0.0
+mock==4.0.1
+python-dateutil==2.8.1
+six==1.14.0
+text-unidecode==1.3
