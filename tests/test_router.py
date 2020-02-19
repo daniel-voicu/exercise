@@ -1,3 +1,4 @@
+from threading import Event
 from unittest import TestCase
 
 from faker import Faker
@@ -69,41 +70,30 @@ class TestRouter(TestCase):
         # Assert
         self.assertIs(agent.is_available, False, f"{agent} is available")
 
-    def test_incoming_call_should_record_consumer_call_when_agents_unavailable(self):
+    def test_incoming_call_should_pass_call_to_agent(self):
         # Arrange
-        self.agent.is_available = False
         self.router.find_agent_for_consumer = MagicMock(return_value=self.agent)
-        self.agent.record_consumer_call = MagicMock()
+        self.agent.handle_call = MagicMock()
 
         # Act
         self.router.incoming_call(self.consumer)
 
         # Assert
-        self.agent.record_consumer_call.assert_called_with(self.consumer)
+        self.agent.handle_call.assert_called_with(self.consumer)
 
-    def test_incoming_call_should_pass_call_to_agent_when_agent_available(self):
+
+    def test_run_should_initialize_agents(self):
         # Arrange
-        self.agent.is_available = True
-        self.router.find_agent_for_consumer = MagicMock(return_value=self.agent)
+        self.agent.initialize = MagicMock()
 
-        self.router.pass_call_to_agent = MagicMock()
+        event_mock = Event()
+        event_mock.isSet = MagicMock(return_value=True)
 
         # Act
-        self.router.incoming_call(self.consumer)
+        self.router.run(event_mock)
 
         # Assert
-        self.router.pass_call_to_agent.assert_called_with(self.agent, self.consumer)
-
-
-    def test_initiate_agent_call_to_consumer_should_initiate_agent_call_to_consumer(self):
-        # Arrange
-        self.agent.make_call = MagicMock()
-
-        # Act
-        self.router.initiate_agent_call_to_consumer(self.consumer, self.agent)
-
-        # Assert
-        self.agent.make_call.assert_called_with(self.consumer)
+        self.agent.initialize.assert_called_with(event_mock)
 
     def test_pass_call_to_agent_should_set_agent_available_when_the_call_is_end(self):
         pass

@@ -18,6 +18,9 @@ MAX_HOUSEHOLD_INCOME = 225000
 
 MAX_SLEEP_BETWEEN_CALLS = 3  # seconds
 
+AGENTS_COUNT = 20
+CONSUMERS_COUNT = 1000
+
 
 def random_sleep_between_calls(min_sleep=0, max_sleep=MAX_SLEEP_BETWEEN_CALLS):
     """
@@ -68,17 +71,21 @@ def get_all_consumers_processed():
     return _all_consumers_processed_
 
 
-def start_thread(target, args):
+def start_thread(target, args, name=None):
     """
     Start a new thread with the received parameters
     :param target: method to be executed inside thread
     :param args: parameters for target
+    :param name: name of thread
     :return: newly created thread
     """
-    thread  = Thread(target=target, args=args)
+    thread = Thread(name=name, target=target, args=args)
     thread.setDaemon(True)
     thread.start()
     return thread
+
+def interval_to_string(value):
+    return f"{value[0]} - {value[1]}"
 
 def set_all_consumers_processed(value):
     """

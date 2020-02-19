@@ -17,12 +17,15 @@ class TestAgent(TestCase):
         # Assert
         self.assertIsInstance(self.agent, Agent)
 
-    def test_receive_call_set_available_false(self):
+    def test_handle_call_increase_total_calls_received(self):
+        # Assert
+        initial_value = self.agent.total_calls_received
+
         # Act
-        self.agent.receive_call(self.consumer)
+        self.agent.handle_call(self.consumer)
 
         # Assert
-        self.assertIs(self.agent.is_available, False)
+        self.assertEqual(self.agent.total_calls_received, initial_value + 1)
 
     def test_make_call_should_call_consumer(self):
         # Arrange
@@ -33,27 +36,6 @@ class TestAgent(TestCase):
 
         # Assert
         self.consumer.receive_call.assert_called_with()
-
-    def test_make_call_should_remove_consumer_from_inbox_if_consumer_available(self):
-        # Arrange
-        self.consumer.is_available = MagicMock(return_value=True)
-        self.agent.voice_mail.remove_from_inbox = MagicMock()
-
-        # Act
-        self.agent.make_call(self.consumer)
-
-        # Assert
-        self.agent.voice_mail.remove_from_inbox.assert_called_with(self.consumer)
-
-    def test_record_consumer_call_should_call_add_to_voice_mail_inbox(self):
-        # Arrange
-        self.agent.voice_mail.add_to_inbox = MagicMock()
-
-        # Act
-        self.agent.record_consumer_call(self.consumer)
-
-        # Assert
-        self.agent.voice_mail.add_to_inbox.assert_called_with(self.consumer)
 
     def test_match_by_attributes_should_call_specialize_match(self):
         # Arrange

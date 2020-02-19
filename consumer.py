@@ -14,15 +14,10 @@ class Consumer(object):
         self.phone_number = phone_number
         self.processed = processed
 
-        # used to generate report
-        self.total_calls_received = 0
-
     def make_call(self, agency):
         agency.incoming_call(self)
 
     def receive_call(self):
-        self.total_calls_received += 1
-
         if self.is_available():
             self.processed = True
 
@@ -33,9 +28,7 @@ class Consumer(object):
         return {"id": self.id, "age": self.age, "state": self.state, "number of kids": self.number_of_kids,
                 "number of cars": self.number_of_cars, "owned house": self.owned_house,
                 "household income": self.household_income, "phone_number": self.phone_number,
-                "processed": self.processed, "total calls received": self.total_calls_received
-                }
-
+                "processed": self.processed}
 
     def __str__(self):
         return f"Consumer {self.__repr__()['id']}"

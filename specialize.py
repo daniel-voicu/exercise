@@ -1,3 +1,6 @@
+from util import interval_to_string
+
+
 class Specialize(object):
     def __init__(self, age_range, state, number_of_kids_range, number_of_cars_range, owned_house,
                  household_income_range):
@@ -37,6 +40,7 @@ class Specialize(object):
         return interval[0] <= value <= interval[1]
 
     def __repr__(self):
-        return {"age range": self.age_range, "state": self.state, "number of kids range": self.number_of_kids_range,
-                "number of cars": self.number_of_cars_range, "owned house": self.owned_house,
-                "household income range": self.household_income_range}
+        return {"age range": interval_to_string(self.age_range), "state": self.state,
+                "number of kids range": interval_to_string(self.number_of_kids_range),
+                "number of cars": interval_to_string(self.number_of_cars_range), "owned house": self.owned_house,
+                "household income range": interval_to_string(self.household_income_range)}

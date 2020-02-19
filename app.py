@@ -1,13 +1,19 @@
+from datetime import datetime
+from threading import Event
+import logging
 from faker import Faker
+
+from generate_reports import generate_consumer_report
 from router import Router
 from consumer import Consumer
 from agent import Agent
 from specialize import Specialize
 from util import MIN_AGE, MAX_AGE, MIN_NUMBER_OF_KIDS, MIN_NUMBER_OF_CARS, MAX_NUMBER_OF_CARS, MAX_NUMBER_OF_KIDS, \
     MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, random_sleep_between_calls, random_interval, \
-    set_all_consumers_processed, start_thread
+    set_all_consumers_processed, start_thread, CONSUMERS_COUNT, AGENTS_COUNT
 from voice_mail import VoiceMail
 
+logging.basicConfig(level=logging.INFO, format='(%(threadName)-9s) %(message)s', )
 
 def generate_specialize(faker):
     return Specialize(age_range=random_interval(MIN_AGE, MAX_AGE),
@@ -41,34 +47,45 @@ def generate_consumer(faker):
 
 
 def make_consumers_calls(consumers, router):
+    threads = []
     for consumer in consumers:
-        print(f"{consumer} will call to agency")
-        consumer.make_call(router)
+        thread = start_thread(target=consumer.make_call, args=(router,), name=f"{consumer}")
+        threads.append(thread)
         random_sleep_between_calls()
 
+    for thread in threads:
+        thread.join()
 
-def check_for_processed_consumers(consumers):
+
+def check_for_processed_consumers(consumers, consumers_processed_event):
     unprocessed_consumers_count = len([consumer for consumer in consumers if not consumer.processed])
     while unprocessed_consumers_count > 0:
-        random_sleep_between_calls(1)
+        random_sleep_between_calls()
         unprocessed_consumers_count = len([consumer for consumer in consumers if not consumer.processed])
 
     set_all_consumers_processed(True)
+    consumers_processed_event.set()
 
 
 if __name__ == "__main__":
     faker = Faker('en_US')
 
-    consumers = [generate_consumer(faker) for i in range(10)]
-    agents = [generate_agent(faker) for i in range(2)]
+    start_date = datetime.now()
+    consumers = [generate_consumer(faker) for i in range(CONSUMERS_COUNT)]
+    agents = [generate_agent(faker) for i in range(AGENTS_COUNT)]
     router = Router(agents)
 
-    consumers_processed_thread = start_thread(target=check_for_processed_consumers, args=(consumers,))
-    consumers_thread = start_thread(target=make_consumers_calls, args=(consumers, router,))
-    router_thread = start_thread(target=router.run, args=())
+    consumers_processed_event = Event()
+    router_thread = start_thread(target=router.run, args=(consumers_processed_event,))
+    consumers_processed_thread = start_thread(target=check_for_processed_consumers,
+                                              args=(consumers, consumers_processed_event,))
+    make_consumers_calls(consumers, router)
 
-    consumers_thread.join()
     router_thread.join()
     consumers_processed_thread.join()
 
-    random_sleep_between_calls()
+    generate_consumer_report(consumers, agents)
+
+    end_date = datetime.now()
+
+    logging.info(f"Process finished in {end_date - start_date}")

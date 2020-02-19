@@ -24,23 +24,3 @@ class TestConsumer(TestCase):
 
         # Assert
         self.router.incoming_call.assert_called_with(self.consumer)
-
-    def test_receive_call_should_set_processed_to_true_if_consumer_available(self):
-        # Arrange
-        self.consumer.is_available = MagicMock(return_value=True)
-
-        # Act
-        self.consumer.receive_call()
-
-        # Assert
-        self.assertIs(self.consumer.processed, True)
-
-    def test_receive_call_should_set_processed_to_false_if_consumer_not_available(self):
-        # Arrange
-        self.consumer.is_available = MagicMock(return_value=False)
-
-        # Act
-        self.consumer.receive_call()
-
-        # Assert
-        self.assertIs(self.consumer.processed, False)
