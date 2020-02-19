@@ -6,7 +6,7 @@ from consumer import Consumer
 from agent import Agent
 from specialize import Specialize
 from util import MIN_AGE, MAX_AGE, MIN_NUMBER_OF_KIDS, MIN_NUMBER_OF_CARS, MAX_NUMBER_OF_CARS, MAX_NUMBER_OF_KIDS, \
-    MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, sleep_between_calls, random_interval, set_all_consumers_processed
+    MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, random_sleep_between_calls, random_interval, set_all_consumers_processed
 from voice_mail import VoiceMail
 
 
@@ -45,13 +45,13 @@ def make_consumers_calls(consumers, router):
     for consumer in consumers:
         print(f"{consumer} will call to agency")
         consumer.make_call(router)
-        sleep_between_calls()
+        random_sleep_between_calls()
 
 
 def check_for_processed_consumers(consumers):
     unprocessed_consumers_count = len([consumer for consumer in consumers if not consumer.processed])
     while unprocessed_consumers_count > 0:
-        sleep_between_calls(1)
+        random_sleep_between_calls(1)
         unprocessed_consumers_count = len([consumer for consumer in consumers if not consumer.processed])
 
     set_all_consumers_processed(True)
@@ -80,4 +80,4 @@ if __name__ == "__main__":
     router_thread.join()
     consumers_processed_thread.join()
 
-    sleep_between_calls()
+    random_sleep_between_calls()

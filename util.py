@@ -15,14 +15,31 @@ MAX_NUMBER_OF_KIDS = 3
 MIN_HOUSEHOLD_INCOME = 125000
 MAX_HOUSEHOLD_INCOME = 225000
 
-MAX_SLEEP_BETWEEN_CALLS = 2  # seconds
+MAX_SLEEP_BETWEEN_CALLS = 3  # seconds
 
 
-def sleep_between_calls(max_sleep=MAX_SLEEP_BETWEEN_CALLS):
-    sleep(uniform(0, max_sleep))
+def random_sleep_between_calls(min_sleep=0, max_sleep=MAX_SLEEP_BETWEEN_CALLS):
+    """
+    Suspends the execution of the current thread for a random amount of seconds.
+    :param min_sleep: minim amount of seconds to sleep
+    :param max_sleep: maxim amount of seconds to sleep
+    :return:
+    """
+    sleep(uniform(min_sleep, max_sleep))
 
 
 def random_interval(left, right):
+    """
+    Generates a random interval based on a start end value
+    :param left: minim value for interval
+    :param right: maxim value for interval
+    :return: interval as tuple
+    :raise: ValueError if left value greater than right value
+    """
+
+    if left > right:
+        raise ValueError(f"Left value '{left}' of interval cannot be greater than the right value '{right}'")
+
     start = randint(left, right)
     end = randint(start, right)
 
@@ -31,9 +48,9 @@ def random_interval(left, right):
 
 def random_bool(chance_of_getting_true=50):
     """
-
-    :param chance_of_getting_true:
-    :return:
+    Generates a random bool value.
+    :param chance_of_getting_true: change of getting true can be increased/decreased using this value
+    :return: random bool value
     """
     available_items = [True if i <= chance_of_getting_true else False for i in range(100)]
     shuffle(available_items)
@@ -42,16 +59,19 @@ def random_bool(chance_of_getting_true=50):
 
 
 def get_all_consumers_processed():
+    """
+    Getter for global variable _all_consumers_processed_
+    :return: value of _all_consumers_processed_
+    """
     global _all_consumers_processed_
     return _all_consumers_processed_
 
 
 def set_all_consumers_processed(value):
+    """
+    Setter for global variable _all_consumers_processed_
+    :param value: new value for _all_consumers_processed_
+    :return:
+    """
     global _all_consumers_processed_
     _all_consumers_processed_ = value
-
-
-def json_default(o):
-    if hasattr(o, "__repr__"):
-        return o.__repr__()
-    raise TypeError(f'Object of type {o.__class__.__name__} is not JSON serializable')

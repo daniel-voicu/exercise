@@ -3,7 +3,7 @@ from threading import Thread
 from typing import List
 
 from agent import Agent
-from util import sleep_between_calls, get_all_consumers_processed
+from util import random_sleep_between_calls, get_all_consumers_processed
 
 
 class Router(object):
@@ -44,14 +44,14 @@ class Router(object):
     def pass_call_to_agent(self, agent, consumer):
         agent.receive_call(consumer)
         print(f"{agent} received call from {consumer}")
-        sleep_between_calls()
+        random_sleep_between_calls()
         agent.is_available = True
         consumer.processed = True
 
     def initiate_agent_call_to_consumer(self, consumer, agent):
         print(f"{agent} will call {consumer}")
         agent.make_call(consumer)
-        sleep_between_calls()
+        random_sleep_between_calls()
 
     def find_agent_for_consumer(self, consumer):
         # Each consumer has a set of attributes that determine how they are matched with the agents.
