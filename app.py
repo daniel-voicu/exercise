@@ -1,12 +1,11 @@
-from threading import Thread
-
 from faker import Faker
 from router import Router
 from consumer import Consumer
 from agent import Agent
 from specialize import Specialize
 from util import MIN_AGE, MAX_AGE, MIN_NUMBER_OF_KIDS, MIN_NUMBER_OF_CARS, MAX_NUMBER_OF_CARS, MAX_NUMBER_OF_KIDS, \
-    MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, random_sleep_between_calls, random_interval, set_all_consumers_processed
+    MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, random_sleep_between_calls, random_interval, \
+    set_all_consumers_processed, start_thread
 from voice_mail import VoiceMail
 
 
@@ -64,17 +63,9 @@ if __name__ == "__main__":
     agents = [generate_agent(faker) for i in range(2)]
     router = Router(agents)
 
-    consumers_processed_thread = Thread(target=check_for_processed_consumers, args=(consumers, ))
-    consumers_processed_thread.setDaemon(True)
-    consumers_processed_thread.start()
-
-    consumers_thread = Thread(target=make_consumers_calls, args=(consumers, router,))
-    consumers_thread.setDaemon(True)
-    consumers_thread.start()
-
-    router_thread = Thread(target=router.run, args=())
-    router_thread.setDaemon(True)
-    router_thread.start()
+    consumers_processed_thread = start_thread(target=check_for_processed_consumers, args=(consumers,))
+    consumers_thread = start_thread(target=make_consumers_calls, args=(consumers, router,))
+    router_thread = start_thread(target=router.run, args=())
 
     consumers_thread.join()
     router_thread.join()

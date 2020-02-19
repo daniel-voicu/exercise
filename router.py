@@ -1,9 +1,8 @@
 from random import randint
-from threading import Thread
 from typing import List
 
 from agent import Agent
-from util import random_sleep_between_calls, get_all_consumers_processed
+from util import random_sleep_between_calls, get_all_consumers_processed, start_thread
 
 
 class Router(object):
@@ -17,9 +16,7 @@ class Router(object):
                 # agent.handle_missing_calls()
                 # TODO move the logic to create threads to a method
                 for consumer in agent.voice_mail.inbox:
-                    thread = Thread(target=self.initiate_agent_call_to_consumer, args=(consumer, agent))
-                    thread.setDaemon(True)
-                    thread.start()
+                    start_thread(target=self.initiate_agent_call_to_consumer, args=(consumer, agent))
 
             agents_with_inbox_items = [agent for agent in self.agents if len(agent.voice_mail.inbox) > 0]
 
@@ -35,8 +32,7 @@ class Router(object):
             return
 
         if agent.is_available:
-            thread = Thread(target=self.pass_call_to_agent, args=(agent, consumer,))
-            thread.start()
+            start_thread(target=self.pass_call_to_agent, args=(agent, consumer,))
         else:
             print(f"{agent} is not available. {consumer} will be added to inbox")
             agent.record_consumer_call(consumer)

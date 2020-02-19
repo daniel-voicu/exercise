@@ -1,4 +1,5 @@
 from random import randint, uniform, shuffle
+from threading import Thread
 from time import sleep
 
 _all_consumers_processed_ = False
@@ -66,6 +67,18 @@ def get_all_consumers_processed():
     global _all_consumers_processed_
     return _all_consumers_processed_
 
+
+def start_thread(target, args):
+    """
+    Start a new thread with the received parameters
+    :param target: method to be executed inside thread
+    :param args: parameters for target
+    :return: newly created thread
+    """
+    thread  = Thread(target=target, args=args)
+    thread.setDaemon(True)
+    thread.start()
+    return thread
 
 def set_all_consumers_processed(value):
     """
