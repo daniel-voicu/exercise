@@ -11,7 +11,6 @@ class Router(object):
         self.agents = agents
 
     def run(self, consumers_processed_event):
-
         agent_threads = []
         for agent in self.agents:
             thread = start_thread(target=agent.initialize, args=(consumers_processed_event,), name=f"{agent}")
@@ -19,13 +18,6 @@ class Router(object):
 
         for thread in agent_threads:
             thread.join()
-
-        while not consumers_processed_event.isSet():
-            logging.info(f"Waiting to process all consumers")
-            consumers_processed = consumers_processed_event.wait()
-            if consumers_processed:
-                logging.info(f"All consumers processed")
-                break
 
     def __find_available_agents_with_inbox_items(self):
         return [agent for agent in self.agents if agent.is_available and len(agent.voice_mail.inbox) > 0]
@@ -44,7 +36,7 @@ class Router(object):
         matching_agents_len = len(matching_agents)
 
         if matching_agents_len == 0:
-            logging.error(f"Unable to find a matching agent for {consumer}. Passing  it to a random agent")
-            return self.agents[randint(0, matching_agents_len - 1)]
+            logging.error(f"Unable to find a matching agent for {consumer}. Passing it to a random agent")
+            return self.agents[randint(0, len(self.agents) - 1)]
 
         return matching_agents[randint(0, matching_agents_len - 1)]
