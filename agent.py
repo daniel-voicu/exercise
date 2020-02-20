@@ -22,7 +22,7 @@ class Agent(object):
             random_sleep_between_calls()
             consumer.processed = True
             self.__set_is_available(True)
-            logging.info(f"{consumer} processed by agent {self}")
+            logging.info(f"{consumer} processed by {self}")
         else:
             logging.info(f"Add {consumer} to {self} queue")
             self.add_call_to_queue(consumer)
@@ -75,8 +75,10 @@ class Agent(object):
     def __check_and_attempt_set_is_available(self):
         self.__lock.acquire()
         initial_value = self.is_available
+        
         try:
-            self.is_available = not self.is_available
+            if self.is_available:
+                self.is_available = not self.is_available
         finally:
             self.__lock.release()
         return initial_value
