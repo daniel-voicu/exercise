@@ -3,7 +3,7 @@ from faker import Faker
 
 
 from app import generate_consumer
-from voice_mail import VoiceMail
+from models.voice_mail import VoiceMail
 
 
 class TestVoiceMail(TestCase):

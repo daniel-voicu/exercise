@@ -2,7 +2,7 @@ import logging
 from random import randint
 from typing import List
 
-from agent import Agent
+from models.agent import Agent
 from util import start_thread
 
 

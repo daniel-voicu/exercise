@@ -4,14 +4,14 @@ import logging
 from faker import Faker
 
 from generate_reports import generate_consumer_report
-from router import Router
-from consumer import Consumer
-from agent import Agent
-from specialize import Specialize
+from models.router import Router
+from models.consumer import Consumer
+from models.agent import Agent
+from models.specialize import Specialize
 from util import MIN_AGE, MAX_AGE, MIN_NUMBER_OF_KIDS, MIN_NUMBER_OF_CARS, MAX_NUMBER_OF_CARS, MAX_NUMBER_OF_KIDS, \
     MIN_HOUSEHOLD_INCOME, MAX_HOUSEHOLD_INCOME, random_sleep_between_calls, random_interval, \
     set_all_consumers_processed, start_thread, CONSUMERS_COUNT, AGENTS_COUNT
-from voice_mail import VoiceMail
+from models.voice_mail import VoiceMail
 
 logging.basicConfig(level=logging.INFO, format='(%(threadName)-9s) %(message)s', )
 
@@ -79,8 +79,10 @@ if __name__ == "__main__":
     router_thread = start_thread(target=router.run, args=(consumers_processed_event,))
     consumers_processed_thread = start_thread(target=check_for_processed_consumers,
                                               args=(consumers, consumers_processed_event,))
-    make_consumers_calls(consumers, router)
 
+    consumers_thread = start_thread(target=make_consumers_calls, args=(consumers, router,))
+
+    consumers_thread.join()
     router_thread.join()
     consumers_processed_thread.join()
 

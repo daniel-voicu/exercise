@@ -4,7 +4,7 @@ from faker import Faker
 from mock import MagicMock
 
 from app import generate_agent, generate_consumer
-from router import Router
+from models.router import Router
 
 
 class TestConsumer(TestCase):

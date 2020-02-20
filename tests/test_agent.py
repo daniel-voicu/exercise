@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 from faker import Faker
 
-from agent import Agent
+from models.agent import Agent
 from app import generate_agent, generate_consumer
 
 
